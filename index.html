@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlaces WAN UCompensar</title>
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --card-bg: #161b22;
+            --accent: #58a6ff;
+            --danger: #f85149;
+            --success: #3fb950;
+            --text-main: #c9d1d9;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+
+        .subnet-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 50px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .city-name { font-size: 1.5rem; color: #ffa657; font-weight: bold; }
+        .network-tag { background: rgba(88, 166, 255, 0.1); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; }
+
+        .step-title { font-size: 0.85rem; font-weight: bold; text-transform: uppercase; color: var(--accent); display: block; margin: 20px 0 10px; }
+
+        /* Estilo de Bits */
+        .bits-grid { display: flex; gap: 8px; justify-content: center; margin: 15px 0; }
+        .bit { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 6px; font-family: monospace; font-weight: bold; }
+        .bit.on { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* Estilo de Cálculo */
+        .calc-display { text-align: center; font-size: 1.2rem; margin: 15px 0; }
+        .math-box { border: 1px dashed var(--danger); padding: 5px 15px; border-radius: 8px; color: var(--danger); }
+        .result-box { background: var(--accent); color: #0d1117; padding: 5px 15px; border-radius: 8px; font-weight: bold; }
+
+        /* Tabla de Resultados */
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
+        .res-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .res-label { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; display: block; }
+        .res-val { font-family: 'Courier New', Courier, monospace; font-size: 1rem; color: #f0f6fc; margin-top: 5px; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 style="color: #f0f6fc;">Proyecto Final</h1>
+        <p> Análisis de Enlaces Punto a Punto</p>
+    </header>
+
+    <div id="content"></div>
+</div>
+
+<script>
+    const enlaces = [
+        { city: "BOGOTÁ", network: "190.0.0.0/30", id: "190.0.0.0", h1: "190.0.0.1", hu: "190.0.0.2", br: "190.0.0.3" },
+        { city: "CALI", network: "190.0.0.4/30", id: "190.0.0.4", h1: "190.0.0.5", hu: "190.0.0.6", br: "190.0.0.7" },
+        { city: "IBAGUÉ", network: "190.0.0.8/30", id: "190.0.0.8", h1: "190.0.0.9", hu: "190.0.0.10", br: "190.0.0.11" },
+        { city: "NEIVA", network: "190.0.0.12/30", id: "190.0.0.12", h1: "190.0.0.13", hu: "190.0.0.14", br: "190.0.0.15" },
+        { city: "MEDELLÍN", network: "190.0.0.16/30", id: "190.0.0.16", h1: "190.0.0.17", hu: "190.0.0.18", br: "190.0.0.19" },
+        { city: "PEREIRA", network: "190.0.0.20/30", id: "190.0.0.20", h1: "190.0.0.21", hu: "190.0.0.22", br: "190.0.0.23" }
+    ];
+
+    const container = document.getElementById('content');
+
+    enlaces.forEach(e => {
+        const card = `
+            <div class="subnet-card">
+                <div class="title-row">
+                    <span class="city-name">${e.city} WAN</span>
+                    <span class="network-tag">ENLACE ${e.network}</span>
+                </div>
+
+                <span class="step-title">PASO 1: Cálculo de la Mask de Red (/30)</span>
+                <div class="bits-grid">
+                    <div class="bit on">1</div><div class="bit on">1</div><div class="bit on">1</div>
+                    <div class="bit on">1</div><div class="bit on">1</div><div class="bit on">1</div>
+                    <div class="bit">0</div><div class="bit">0</div>
+                </div>
+                <div class="calc-display">
+                    <span class="math-box">128+64+32+16+8+4</span> = <span class="result-box">252</span>
+                </div>
+                <p style="text-align:center; font-family: monospace;">Máscara: 255.255.255.252</p>
+
+                <span class="step-title">PASO 2: Cálculo de Redes y Hosts</span>
+                <div class="res-grid">
+                    <div class="res-box"><span class="res-label">Bits de Subred</span><span class="res-val">6 bits</span></div>
+                    <div class="res-box"><span class="res-label">Subredes</span><span class="res-val">2<sup>6</sup> = 64</span></div>
+                    <div class="res-box"><span class="res-label">Hosts Útiles</span><span class="res-val">2<sup>2</sup> - 2 = 2</span></div>
+                </div>
+
+                <span class="step-title">PASO 3: Direccionamiento Final</span>
+                <div class="res-grid">
+                    <div class="res-box"><span class="res-label">ID RED</span><span class="res-val">${e.id}</span></div>
+                    <div class="res-box"><span class="res-label">1er HOST</span><span class="res-val">${e.h1}</span></div>
+                    <div class="res-box"><span class="res-label">ÚLT. HOST</span><span class="res-val">${e.hu}</span></div>
+                    <div class="res-box"><span class="res-label">BROADCAST</span><span class="res-val">${e.br}</span></div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += card;
+    });
+</script>
+
+</body>
+</html>
